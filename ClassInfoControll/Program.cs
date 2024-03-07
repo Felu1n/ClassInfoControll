@@ -6,9 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<TodoContext>(opt =>
-        opt.UseInMemoryDatabase("TodoList"));
-
 builder.Services.AddDbContext<ScheduleContext>(opt =>
         opt.UseInMemoryDatabase("ScheduleList"));
 
