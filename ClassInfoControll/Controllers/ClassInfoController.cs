@@ -1,24 +1,33 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using TodoApi.Models;
+using System.Linq;
+using ClassInfoControll.Models;
+using ClassInfoControll.Data;
 
+//[Route("")]
 [Route("api/[controller]")]
 [ApiController]
 public class ClassInfoController : ControllerBase
 {
-    private static List<ScheduleItems> _classInfoList = new List<ScheduleItems>();
+    private readonly ScheduleContext _context;
+
+    public ClassInfoController(ScheduleContext context)
+    {
+        _context = context;
+    }
 
     [HttpGet]
     public IActionResult GetAllClassInfo()
     {
-        return Ok(_classInfoList);
+        var classInfoList = _context.ScheduleItems.ToList();
+        return Ok(classInfoList);
     }
 
     [HttpGet("{id}")]
     public IActionResult GetClassInfoById(int id)
     {
-        var classInfo = _classInfoList.Find(c => c.Id == id);
+        var classInfo = _context.ScheduleItems.Find(id);
         if (classInfo == null)
         {
             return NotFound();
@@ -27,47 +36,41 @@ public class ClassInfoController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult CreateClassInfo(ScheduleItems classInfo)
+    public IActionResult CreateClassInfo(ScheduleItem classInfo)
     {
-        classInfo.Id = GenerateUniqueId();
-        _classInfoList.Add(classInfo);
+        _context.ScheduleItems.Add(classInfo);
+        _context.SaveChanges();
         return CreatedAtAction(nameof(GetClassInfoById), new { id = classInfo.Id }, classInfo);
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateClassInfo(int id, ScheduleItems classInfo)
+    public IActionResult UpdateClassInfo(int id, ScheduleItem classInfo)
     {
-        var existingClassInfo = _classInfoList.Find(c => c.Id == id);
-        if (existingClassInfo == null)
+        if (id != classInfo.Id)
         {
-            return NotFound();
+            return BadRequest();
         }
-        existingClassInfo.FacultyName = classInfo.FacultyName;
-        existingClassInfo.ClassTime = classInfo.ClassTime;
-        existingClassInfo.GroupNumber = classInfo.GroupNumber;
-        existingClassInfo.Subject = classInfo.Subject;
-        existingClassInfo.Teacher = classInfo.Teacher;
-        existingClassInfo.AlmUsage = classInfo.AlmUsage;
-        existingClassInfo.SyllabusAvailability = classInfo.SyllabusAvailability;
-        existingClassInfo.StudentAttendance = classInfo.StudentAttendance;
+
+        _context.Entry(classInfo).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+        _context.SaveChanges();
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public IActionResult DeleteClassInfo(int id)
     {
-        var classInfoToRemove = _classInfoList.Find(c => c.Id == id);
+        var classInfoToRemove = _context.ScheduleItems.Find(id);
         if (classInfoToRemove == null)
         {
             return NotFound();
         }
-        _classInfoList.Remove(classInfoToRemove);
+        _context.ScheduleItems.Remove(classInfoToRemove);
+        _context.SaveChanges();
         return NoContent();
     }
 
     private int GenerateUniqueId()
     {
-        
-        return new Random().Next(1000, 9999); 
+        return new Random().Next(1000, 9999);
     }
 }

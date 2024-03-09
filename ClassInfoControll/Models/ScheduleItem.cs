@@ -1,21 +1,45 @@
-﻿namespace TodoApi.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-public class ScheduleItems
+namespace ClassInfoControll.Models
 {
-    public int Id { get; set; }
-    public string FacultyName { get; set; }
-    public string ClassTime { get; set; }
-    public string GroupNumber { get; set; }
-    public string Subject { get; set; }
-    public string Teacher { get; set; }
-    public string AlmUsage { get; set; }
-    public string SyllabusAvailability { get; set; }
-    public StudentAttendance StudentAttendance { get; set; }
+    public class ScheduleItem
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public string FacultyName { get; set; }
+
+        [Required]
+        public string ClassTime { get; set; }
+
+        [Required]
+        public string GroupNumber { get; set; }
+
+        [Required]
+        public string Subject { get; set; }
+
+        [Required]
+        public string Teacher { get; set; }
+
+        [Required]
+        public string AlmUsage { get; set; }
+
+        [Required]
+        public string SyllabusAvailability { get; set; }
+
+        [Required]
+        public StudentAttendance StudentAttendance { get; set; }
+    }
+
+    public class StudentAttendance
+    {
+        public int TotalStudents { get; set; }
+
+        public int PresentStudents { get; set; }
+
+        public double AttendanceRate { get; set; }
+    }
 }
 
-public class StudentAttendance
-{
-    public int TotalStudents { get; set; }
-    public int PresentStudents { get; set; }
-    public double AttendanceRate { get; set; }
-}

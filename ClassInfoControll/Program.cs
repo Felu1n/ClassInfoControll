@@ -1,13 +1,23 @@
 using Microsoft.EntityFrameworkCore;
-using TodoApi.Models;
+using ClassInfoControll.Data;
+using ClassInfoControll.Models;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<ScheduleContext>(opt =>
-        opt.UseInMemoryDatabase("ScheduleList"));
+var configuration = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json")
+        .Build();
+var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+//Sqllite
+builder.Services.AddDbContext<ScheduleContext>(options =>
+    options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
